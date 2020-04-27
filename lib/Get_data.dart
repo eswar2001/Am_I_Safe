@@ -68,7 +68,7 @@ class _GetDataState extends State<GetData> {
                 height: 100.0,
               ),
               Card(
-                color: Colors.black87,
+                color: Colors.transparent,
                 child: Column(
                   children: [
                     locationData("Latitude: " + latitude),
@@ -80,45 +80,50 @@ class _GetDataState extends State<GetData> {
                   ],
                 ),
               ),
-              Ink(
-                decoration: const ShapeDecoration(
-                  color: Colors.lightBlue,
-                  shape: CircleBorder(),
-                ),
-                child: IconButton(
-                  icon: Icon(Icons.location_on),
-                  onPressed: () {
-                    BackgroundLocation.startLocationService();
-                  },
-                  color: Colors.blue,
-                  tooltip: 'Start Location Service',
-                ),
-              ),
-              Ink(
-                decoration: const ShapeDecoration(
-                  color: Colors.lightBlue,
-                  shape: CircleBorder(),
-                ),
-                child: IconButton(
-                  icon: Icon(Icons.location_off),
-                  onPressed: () {
-                    BackgroundLocation.stopLocationService();
-                  },
-                  tooltip: "Stop Location Service",
-                ),
-              ),
-              Ink(
-                decoration: const ShapeDecoration(
-                  color: Colors.lightBlue,
-                  shape: CircleBorder(),
-                ),
-                child: IconButton(
-                  icon: Icon(Icons.location_on),
-                  onPressed: () {
-                    getCurrentLocation();
-                  },
-                  tooltip: "Get Current Location",
-                ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Ink(
+                    decoration: const ShapeDecoration(
+                      color: Colors.lightBlue,
+                      shape: CircleBorder(),
+                    ),
+                    child: IconButton(
+                      icon: Icon(Icons.my_location),
+                      onPressed: () {
+                        BackgroundLocation.startLocationService();
+                      },
+                      color: Colors.blue,
+                      tooltip: 'Start Location Service',
+                    ),
+                  ),
+                  Ink(
+                    decoration: const ShapeDecoration(
+                      color: Colors.lightBlue,
+                      shape: CircleBorder(),
+                    ),
+                    child: IconButton(
+                      icon: Icon(Icons.location_off),
+                      onPressed: () {
+                        BackgroundLocation.stopLocationService();
+                      },
+                      tooltip: "Stop Location Service",
+                    ),
+                  ),
+                  Ink(
+                    decoration: const ShapeDecoration(
+                      color: Colors.lightBlue,
+                      shape: CircleBorder(),
+                    ),
+                    child: IconButton(
+                      icon: Icon(Icons.location_on),
+                      onPressed: () {
+                        getCurrentLocation();
+                      },
+                      tooltip: "Get Current Location",
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
