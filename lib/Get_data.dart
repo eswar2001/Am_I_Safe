@@ -22,13 +22,12 @@ class GetData extends StatefulWidget {
 }
 
 class _GetDataState extends State<GetData> {
-
-   String latitude = "waiting...";
-   String longitude = "waiting...";
-   String altitude = "waiting...";
-   String accuracy = "waiting...";
-   String bearing = "waiting...";
-   String speed = "waiting...";
+  String latitude = "Hang in there";
+  String longitude = "Hang in there";
+  String altitude = "Hang in there";
+  String accuracy = "Hang in there";
+  String bearing = "Hang in there";
+  String speed = "Hang in there";
 
   @override
   void initState() {
@@ -65,27 +64,62 @@ class _GetDataState extends State<GetData> {
         body: Center(
           child: ListView(
             children: <Widget>[
-              locationData("Latitude: " + latitude),
-              locationData("Longitude: " + longitude),
-              locationData("Altitude: " + altitude),
-              locationData("Accuracy: " + accuracy),
-              locationData("Bearing: " + bearing),
-              locationData("Speed: " + speed),
-              RaisedButton(
+              SizedBox(
+                height: 100.0,
+              ),
+              Card(
+                color: Colors.black87,
+                child: Column(
+                  children: [
+                    locationData("Latitude: " + latitude),
+                    locationData("Longitude: " + longitude),
+                    locationData("Altitude: " + altitude),
+                    locationData("Accuracy: " + accuracy),
+                    locationData("Bearing: " + bearing),
+                    locationData("Speed: " + speed)
+                  ],
+                ),
+              ),
+              Ink(
+                decoration: const ShapeDecoration(
+                  color: Colors.lightBlue,
+                  shape: CircleBorder(),
+                ),
+                child: IconButton(
+                  icon: Icon(Icons.location_on),
                   onPressed: () {
                     BackgroundLocation.startLocationService();
                   },
-                  child: Text("Start Location Service")),
-              RaisedButton(
+                  color: Colors.blue,
+                  tooltip: 'Start Location Service',
+                ),
+              ),
+              Ink(
+                decoration: const ShapeDecoration(
+                  color: Colors.lightBlue,
+                  shape: CircleBorder(),
+                ),
+                child: IconButton(
+                  icon: Icon(Icons.location_off),
                   onPressed: () {
                     BackgroundLocation.stopLocationService();
                   },
-                  child: Text("Stop Location Service")),
-              RaisedButton(
+                  tooltip: "Stop Location Service",
+                ),
+              ),
+              Ink(
+                decoration: const ShapeDecoration(
+                  color: Colors.lightBlue,
+                  shape: CircleBorder(),
+                ),
+                child: IconButton(
+                  icon: Icon(Icons.location_on),
                   onPressed: () {
                     getCurrentLocation();
                   },
-                  child: Text("Get Current Location")),
+                  tooltip: "Get Current Location",
+                ),
+              ),
             ],
           ),
         ),
@@ -97,6 +131,7 @@ class _GetDataState extends State<GetData> {
     return Text(
       data,
       style: TextStyle(
+        color: Colors.blue,
         fontWeight: FontWeight.bold,
         fontSize: 18,
       ),
