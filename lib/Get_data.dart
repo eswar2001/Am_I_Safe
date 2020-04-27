@@ -1,7 +1,7 @@
 import 'package:background_location/background_location.dart';
 import 'package:flutter/material.dart';
-
-import 'location.dart';
+import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart';
 
 class FetchData extends StatelessWidget {
   // This widget is the root of your application.
@@ -17,11 +17,15 @@ class FetchData extends StatelessWidget {
 }
 
 class GetData extends StatefulWidget {
-  Location a;
   _GetDataState createState() => _GetDataState();
 }
 
 class _GetDataState extends State<GetData> {
+  final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
+
+  Position _currentPosition;
+  String _currentAddress = "Hang in there";
+
   String latitude = "Hang in there";
   String longitude = "Hang in there";
   String altitude = "Hang in there";
@@ -75,7 +79,8 @@ class _GetDataState extends State<GetData> {
                   locationData("Altitude: " + altitude),
                   locationData("Accuracy: " + accuracy),
                   locationData("Bearing: " + bearing),
-                  locationData("Speed: " + speed)
+                  locationData("Speed: " + speed),
+                  locationData("Location: " + _currentAddress),
                 ],
               ),
               SizedBox(
@@ -153,10 +158,39 @@ class _GetDataState extends State<GetData> {
     );
   }
 
+  _getAddressFromLatLng() async {
+    try {
+      List<Placemark> p = await geolocator.placemarkFromCoordinates(
+          _currentPosition.latitude, _currentPosition.longitude);
+
+      Placemark place = p[0];
+
+      setState(() {
+        _currentAddress =
+            "${place.locality}, ${place.postalCode}, ${place.country}";
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
+
   getCurrentLocation() {
-    BackgroundLocation().getCurrentLocation().then((location) {
-      print("This is current Location" + location.longitude.toString());
+    geolocator
+        .getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
+        .then((Position position) {
+      setState(() {
+        _currentPosition = position;
+      });
+
+      _getAddressFromLatLng();
+    }).catchError((e) {
+      print(e);
     });
+    BackgroundLocation().getCurrentLocation().then(
+      (location) {
+        print("This is current Location" + location.longitude.toString());
+      },
+    );
   }
 
   @override
