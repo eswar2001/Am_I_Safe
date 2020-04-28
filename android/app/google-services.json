@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "774256328060",
+    "firebase_url": "https://amisafe-706fd.firebaseio.com",
+    "project_id": "amisafe-706fd",
+    "storage_bucket": "amisafe-706fd.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:774256328060:android:016050e7a4f977e5f0f8f9",
+        "android_client_info": {
+          "package_name": "com.example.Am_I_safe"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "774256328060-sk8q22upq2sef7ro8ambe6qlg9mcom1q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCjtROxGP93_ixJ27ua-bUEbKK0a153dR8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "774256328060-sk8q22upq2sef7ro8ambe6qlg9mcom1q.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
