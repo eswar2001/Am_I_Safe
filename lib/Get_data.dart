@@ -1,11 +1,7 @@
-import 'dart:io';
-
 import 'package:background_location/background_location.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:path_provider/path_provider.dart';
 
 class FetchData extends StatefulWidget {
   _FetchDataState createState() => _FetchDataState();
@@ -13,10 +9,10 @@ class FetchData extends StatefulWidget {
 
 class _FetchDataState extends State<FetchData> {
   final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
-  final databaseReference = FirebaseDatabase.instance.reference();
+
   Position _currentPosition;
-  String _userName;
   String _currentAddress = "Hang in there";
+
   String latitude = "Hang in there";
   String longitude = "Hang in there";
   String altitude = "Hang in there";
@@ -27,20 +23,19 @@ class _FetchDataState extends State<FetchData> {
   @override
   void initState() {
     super.initState();
-    _read();
-    BackgroundLocation.startLocationService();
-    BackgroundLocation.getLocationUpdates(
-      (location) {
-        setState(() {
-          this.latitude = location.latitude.toString();
-          this.longitude = location.longitude.toString();
-          this.accuracy = location.accuracy.toString();
-          this.altitude = location.altitude.toString();
-          this.bearing = location.bearing.toString();
-          this.speed = location.speed.toString();
-        });
 
-        print("""\n
+    BackgroundLocation.startLocationService();
+    BackgroundLocation.getLocationUpdates((location) {
+      setState(() {
+        this.latitude = location.latitude.toString();
+        this.longitude = location.longitude.toString();
+        this.accuracy = location.accuracy.toString();
+        this.altitude = location.altitude.toString();
+        this.bearing = location.bearing.toString();
+        this.speed = location.speed.toString();
+      });
+
+      print("""\n
       Latitude:  $latitude
       Longitude: $longitude
       Altitude: $altitude
@@ -48,8 +43,7 @@ class _FetchDataState extends State<FetchData> {
       Bearing:  $bearing
       Speed: $speed
       """);
-      },
-    );
+    });
   }
 
   @override
@@ -184,37 +178,6 @@ class _FetchDataState extends State<FetchData> {
         print("This is current Location" + location.longitude.toString());
       },
     );
-  }
-
-  _read() async {
-    try {
-      final directory = await getApplicationDocumentsDirectory();
-      final file = File('${directory.path}/my_file.txt');
-      String text = await file.readAsString();
-      print(text);
-      _userName = text;
-    } catch (e) {
-      print("Couldn't read file");
-    }
-  }
-
-  void updateData() {
-    int no = 0;
-    var now = new DateTime.now();
-    databaseReference.child(_userName).update({
-      "Locations": [
-        {
-          'Time-stamp': now,
-          "Latitude": latitude,
-          "Longitude": longitude,
-          "Altitude": altitude,
-          "Accuracy": accuracy,
-          "Bearing": bearing,
-          "Speed": speed,
-          "Location": _currentAddress
-        }
-      ]
-    });
   }
 
   @override
