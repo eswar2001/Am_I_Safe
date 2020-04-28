@@ -3,24 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 
-class FetchData extends StatelessWidget {
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      theme: ThemeData.dark(),
-      home: GetData(),
-    );
-  }
+class FetchData extends StatefulWidget {
+  _FetchDataState createState() => _FetchDataState();
 }
 
-class GetData extends StatefulWidget {
-  _GetDataState createState() => _GetDataState();
-}
-
-class _GetDataState extends State<GetData> {
+class _FetchDataState extends State<FetchData> {
   final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
 
   Position _currentPosition;
