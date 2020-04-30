@@ -1,8 +1,8 @@
+import 'dart:convert';
 import 'dart:io';
-
+import 'package:http/http.dart' as http;
 import 'package:background_location/background_location.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -48,7 +48,14 @@ class _FetchDataState extends State<FetchData> {
       """);
     });
 
-    getCurrentLocation();
+    getCurrentLocation().then(() {
+      var timeStamp = DateTime.now();
+      http.put("https://amisafe-706fd.firebaseio.com/$text/$timeStamp/latitude",
+          body: json.encode(latitude));
+      http.put(
+          "https://amisafe-706fd.firebaseio.com/$text/$timeStamp/longitude",
+          body: json.encode(longitude));
+    });
     _read();
   }
 
