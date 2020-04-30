@@ -1,7 +1,12 @@
+import 'dart:io';
+
 import 'package:background_location/background_location.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:path_provider/path_provider.dart';
+
+String text;
 
 class FetchData extends StatefulWidget {
   _FetchDataState createState() => _FetchDataState();
@@ -12,7 +17,6 @@ class _FetchDataState extends State<FetchData> {
 
   Position _currentPosition;
   String _currentAddress = "Hang in there";
-
   String latitude = "Hang in there";
   String longitude = "Hang in there";
   String altitude = "Hang in there";
@@ -23,7 +27,6 @@ class _FetchDataState extends State<FetchData> {
   @override
   void initState() {
     super.initState();
-
     BackgroundLocation.startLocationService();
     BackgroundLocation.getLocationUpdates((location) {
       setState(() {
@@ -44,6 +47,9 @@ class _FetchDataState extends State<FetchData> {
       Speed: $speed
       """);
     });
+
+    getCurrentLocation();
+    _read();
   }
 
   @override
@@ -178,6 +184,17 @@ class _FetchDataState extends State<FetchData> {
         print("This is current Location" + location.longitude.toString());
       },
     );
+  }
+
+  _read() async {
+    try {
+      final directory = await getApplicationDocumentsDirectory();
+      final file = File('${directory.path}/my_file.txt');
+      text = await file.readAsString();
+      print('${directory.path}');
+    } catch (e) {
+      print("Couldn't read file");
+    }
   }
 
   @override

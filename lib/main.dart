@@ -1,13 +1,17 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 
 import 'Get_data.dart';
 
+bool flag = true;
+String text = '';
 void main() {
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -25,31 +29,75 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  @override
+  final myController = TextEditingController();
+  void initState() {
+    _read();
+    super.initState();
+  }
+
   Widget build(BuildContext context) {
     return Material(
-      child: InkWell(
-        borderRadius: BorderRadius.circular(20),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) =>FetchData()),
-          );
-        },
-        splashColor: Colors.blue,
-        highlightColor: Colors.blue,
-        child: Container(
-          height: 36,
-          width: 240,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Colors.grey),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SizedBox(
+            height: 100.0,
           ),
-          child: Center(
-            child: Text("Tap to activate Location feeder"),
+          TextField(
+            controller: myController,
+            autofocus: true,
+            cursorColor: Colors.amber,
+            cursorWidth: 5.0,
+            decoration: InputDecoration(
+              hintText: "Enter your email",
+              enabled: true,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(5.0),
+                borderSide: BorderSide(
+                  color: Colors.amber,
+                  style: BorderStyle.solid,
+                ),
+              ),
+            ),
           ),
-        ),
+          SizedBox(
+            height: 100.0,
+          ),
+          FlatButton(
+            onPressed: () {
+              text = myController.text;
+              _save();
+            },
+            child: Text('Save'),
+          )
+        ],
       ),
+    );
+  }
+
+  _read() async {
+    try {
+      final directory = await getApplicationDocumentsDirectory();
+      final file = File('${directory.path}/my_file.txt');
+      text = await file.readAsString();
+      print(text);
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => FetchData()),
+      );
+    } catch (e) {
+      print('file not found');
+    }
+  }
+
+  _save() async {
+    final directory = await getApplicationDocumentsDirectory();
+    final file = File('${directory.path}/my_file.txt');
+    await file.writeAsString(text);
+    print('saved');
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => FetchData()),
     );
   }
 }
