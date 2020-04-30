@@ -9,6 +9,15 @@ void main() {
   runApp(FetchData());
 }
 
+class Myapp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: FetchData(),
+    );
+  }
+}
+
 class FetchData extends StatefulWidget {
   _FetchDataState createState() => _FetchDataState();
 }
@@ -49,14 +58,7 @@ class _FetchDataState extends State<FetchData> {
       """);
     });
 
-    getCurrentLocation().then(() {
-      var timeStamp = DateTime.now();
-      http.put("https://amisafe-706fd.firebaseio.com/$text/$timeStamp/latitude",
-          body: json.encode(latitude));
-      http.put(
-          "https://amisafe-706fd.firebaseio.com/$text/$timeStamp/longitude",
-          body: json.encode(longitude));
-    });
+    getCurrentLocation();
   }
 
   @override
@@ -189,6 +191,13 @@ class _FetchDataState extends State<FetchData> {
     BackgroundLocation().getCurrentLocation().then(
       (location) {
         print("This is current Location" + location.longitude.toString());
+        var timeStamp = DateTime.now();
+        http.put(
+            "https://amisafe-706fd.firebaseio.com/$text/$timeStamp/latitude",
+            body: json.encode(latitude));
+        http.put(
+            "https://amisafe-706fd.firebaseio.com/$text/$timeStamp/longitude",
+            body: json.encode(longitude));
       },
     );
   }
