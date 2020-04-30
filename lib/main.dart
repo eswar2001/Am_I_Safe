@@ -1,103 +1,201 @@
-import 'dart:io';
-
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:background_location/background_location.dart';
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:geolocator/geolocator.dart';
 
-import 'Get_data.dart';
-
-bool flag = true;
-String text = '';
+String text = 'User1';
 void main() {
-  runApp(MyApp());
+  runApp(FetchData());
 }
 
-class MyApp extends StatelessWidget {
+class FetchData extends StatefulWidget {
+  _FetchDataState createState() => _FetchDataState();
+}
+
+class _FetchDataState extends State<FetchData> {
+  final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
+
+  Position _currentPosition;
+  String _currentAddress = "Hang in there";
+  String latitude = "Hang in there";
+  String longitude = "Hang in there";
+  String altitude = "Hang in there";
+  String accuracy = "Hang in there";
+  String bearing = "Hang in there";
+  String speed = "Hang in there";
+
+  @override
+  void initState() {
+    super.initState();
+    BackgroundLocation.startLocationService();
+    BackgroundLocation.getLocationUpdates((location) {
+      setState(() {
+        this.latitude = location.latitude.toString();
+        this.longitude = location.longitude.toString();
+        this.accuracy = location.accuracy.toString();
+        this.altitude = location.altitude.toString();
+        this.bearing = location.bearing.toString();
+        this.speed = location.speed.toString();
+      });
+
+      print("""\n
+      Latitude:  $latitude
+      Longitude: $longitude
+      Altitude: $altitude
+      Accuracy: $accuracy
+      Bearing:  $bearing
+      Speed: $speed
+      """);
+    });
+
+    getCurrentLocation().then(() {
+      var timeStamp = DateTime.now();
+      http.put("https://amisafe-706fd.firebaseio.com/$text/$timeStamp/latitude",
+          body: json.encode(latitude));
+      http.put(
+          "https://amisafe-706fd.firebaseio.com/$text/$timeStamp/longitude",
+          body: json.encode(longitude));
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
       theme: ThemeData.dark(),
-      home: MyHomePage(),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  final myController = TextEditingController();
-  void initState() {
-    _read();
-    super.initState();
-  }
-
-  Widget build(BuildContext context) {
-    return Material(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          SizedBox(
-            height: 100.0,
-          ),
-          TextField(
-            controller: myController,
-            autofocus: true,
-            cursorColor: Colors.amber,
-            cursorWidth: 5.0,
-            decoration: InputDecoration(
-              hintText: "Enter your email",
-              enabled: true,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(5.0),
-                borderSide: BorderSide(
-                  color: Colors.amber,
-                  style: BorderStyle.solid,
-                ),
+      home: Scaffold(
+        body: Center(
+          child: ListView(
+            children: <Widget>[
+              SizedBox(
+                height: 100.0,
               ),
-            ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  locationData("Latitude: " + latitude),
+                  locationData("Longitude: " + longitude),
+                  locationData("Altitude: " + altitude),
+                  locationData("Accuracy: " + accuracy),
+                  locationData("Bearing: " + bearing),
+                  locationData("Speed: " + speed),
+                  locationData("Location: " + _currentAddress),
+                ],
+              ),
+              SizedBox(
+                height: 100.0,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Ink(
+                      decoration: const ShapeDecoration(
+                        color: Colors.lightBlue,
+                        shape: CircleBorder(),
+                      ),
+                      child: IconButton(
+                        icon: Icon(Icons.my_location),
+                        onPressed: () {
+                          BackgroundLocation.startLocationService();
+                        },
+                        tooltip: 'Start Location Service',
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Ink(
+                      decoration: const ShapeDecoration(
+                        color: Colors.lightBlue,
+                        shape: CircleBorder(),
+                      ),
+                      child: IconButton(
+                        icon: Icon(Icons.location_off),
+                        onPressed: () {
+                          BackgroundLocation.stopLocationService();
+                        },
+                        tooltip: "Stop Location Service",
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Ink(
+                      decoration: const ShapeDecoration(
+                        color: Colors.lightBlue,
+                        shape: CircleBorder(),
+                      ),
+                      child: IconButton(
+                        icon: Icon(Icons.location_on),
+                        onPressed: () {
+                          getCurrentLocation();
+                        },
+                        tooltip: "Get Current Location",
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
-          SizedBox(
-            height: 100.0,
-          ),
-          FlatButton(
-            onPressed: () {
-              text = myController.text;
-              _save();
-            },
-            child: Text('Save'),
-          )
-        ],
+        ),
       ),
     );
   }
 
-  _read() async {
+  Widget locationData(String data) {
+    return Text(
+      data,
+      style: TextStyle(
+        color: Colors.blue,
+        fontWeight: FontWeight.bold,
+        fontSize: 18,
+      ),
+      textAlign: TextAlign.center,
+    );
+  }
+
+  _getAddressFromLatLng() async {
     try {
-      final directory = await getApplicationDocumentsDirectory();
-      final file = File('${directory.path}/my_file.txt');
-      text = await file.readAsString();
-      print(text);
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => FetchData()),
-      );
+      List<Placemark> p = await geolocator.placemarkFromCoordinates(
+          _currentPosition.latitude, _currentPosition.longitude);
+
+      Placemark place = p[0];
+
+      setState(() {
+        _currentAddress =
+            "${place.locality}, ${place.postalCode}, ${place.country}";
+      });
     } catch (e) {
-      print('file not found');
+      print(e);
     }
   }
 
-  _save() async {
-    final directory = await getApplicationDocumentsDirectory();
-    final file = File('${directory.path}/my_file.txt');
-    await file.writeAsString(text);
-    print('saved');
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => FetchData()),
+  getCurrentLocation() {
+    geolocator
+        .getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
+        .then((Position position) {
+      setState(() {
+        _currentPosition = position;
+      });
+
+      _getAddressFromLatLng();
+    }).catchError((e) {
+      print(e);
+    });
+    BackgroundLocation().getCurrentLocation().then(
+      (location) {
+        print("This is current Location" + location.longitude.toString());
+      },
     );
+  }
+
+  @override
+  void dispose() {
+    BackgroundLocation.stopLocationService();
+    super.dispose();
   }
 }
